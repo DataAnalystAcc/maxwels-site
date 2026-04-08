@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+const { title, description, icon = '◆' } = Astro.props;
+---
+
+<div class="bg-bg-elevated border border-border rounded-sm p-6 md:p-8 card-hover group">
+  <!-- Icon -->
+  <div class="w-10 h-10 flex items-center justify-center border border-border-subtle rounded-sm mb-5 text-accent-green group-hover:border-accent-green/30 group-hover:bg-glow-green transition-all duration-300">
+    <span class="text-lg" aria-hidden="true">{icon}</span>
+  </div>
+
+  <h3 class="font-display text-lg font-semibold tracking-tight text-text-primary mb-3">
+    {title}
+  </h3>
+
+  <p class="text-sm text-text-secondary leading-relaxed">
+    {description}
+  </p>
+</div>

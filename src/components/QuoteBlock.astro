@@ -1,0 +1,27 @@
+---
+interface Props {
+  text: string;
+  attribution?: string;
+}
+
+const { text, attribution } = Astro.props;
+---
+
+<blockquote class="relative py-8 md:py-12">
+  <!-- Decorative accent -->
+  <div
+    class="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-accent-green/40 via-accent-green/10 to-transparent"
+    aria-hidden="true"
+  ></div>
+
+  <div class="pl-8 md:pl-12">
+    <p class="font-display text-xl md:text-2xl lg:text-3xl font-medium tracking-tight text-text-primary leading-snug">
+      {text}
+    </p>
+    {attribution && (
+      <cite class="block mt-4 font-mono text-xs uppercase tracking-widest text-text-muted not-italic">
+        — {attribution}
+      </cite>
+    )}
+  </div>
+</blockquote>

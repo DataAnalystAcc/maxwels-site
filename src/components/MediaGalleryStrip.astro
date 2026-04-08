@@ -1,0 +1,44 @@
+---
+interface Props {
+  images?: { src: string; alt: string }[];
+}
+
+const { images = [] } = Astro.props;
+
+const placeholders = images.length > 0 ? images : [
+  { src: '/images/travel-placeholder.jpg', alt: 'Travel photography' },
+  { src: '/images/fitness-placeholder.jpg', alt: 'Fitness and training' },
+  { src: '/images/mood-placeholder.jpg', alt: 'Atmospheric mood' },
+];
+---
+
+<div class="relative overflow-hidden">
+  <div class="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
+    {placeholders.map((img) => (
+      <div class="shrink-0 w-72 md:w-96 h-48 md:h-64 rounded-sm overflow-hidden bg-bg-elevated snap-start relative group">
+        <img
+          src={img.src}
+          alt={img.alt}
+          class="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-500"
+          loading="lazy"
+          onerror="this.style.display='none'; this.parentElement.classList.add('flex','items-center','justify-center'); const s = document.createElement('span'); s.className='text-text-muted text-xs font-mono'; s.textContent='[ ' + this.alt + ' ]'; this.parentElement.appendChild(s);"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-bg-primary/40 to-transparent pointer-events-none" />
+      </div>
+    ))}
+  </div>
+
+  <!-- Fade edges -->
+  <div class="absolute top-0 left-0 bottom-4 w-8 bg-gradient-to-r from-bg-primary to-transparent pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute top-0 right-0 bottom-4 w-8 bg-gradient-to-l from-bg-primary to-transparent pointer-events-none" aria-hidden="true"></div>
+</div>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

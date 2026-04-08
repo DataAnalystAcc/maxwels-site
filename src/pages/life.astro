@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Section from '../components/Section.astro';
+import LifeCard from '../components/LifeCard.astro';
+import CurrentFocusList from '../components/CurrentFocusList.astro';
+import MediaGalleryStrip from '../components/MediaGalleryStrip.astro';
+import QuoteBlock from '../components/QuoteBlock.astro';
+import { lifeCards } from '../data/site';
+---
+
+<BaseLayout title="Life" description="Beyond work — calisthenics, travel, music, culture, and building a life with freedom and intensity.">
+  <Nav slot="nav" />
+
+  <!-- Page Hero -->
+  <section class="pt-16 md:pt-24 pb-12 relative">
+    <div class="mx-auto max-w-[1200px] px-6 md:px-10">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] text-accent-purple mb-3 reveal-on-scroll">
+        Life
+      </p>
+      <h1 class="font-display text-[clamp(2rem,5vw,3.5rem)] font-bold tracking-tight text-text-primary leading-[1.1] mb-6 reveal-on-scroll">
+        Beyond work
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed max-w-2xl reveal-on-scroll">
+        I'm interested in more than output. I like movement, intensity, strong aesthetics, honest conversations, subculture, travel, music and building a life with freedom in it.
+      </p>
+    </div>
+  </section>
+
+  <!-- Life Cards -->
+  <Section class="border-t border-border">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-children">
+      {lifeCards.map((card) => (
+        <LifeCard
+          title={card.title}
+          description={card.description}
+          icon={card.icon}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- Gallery Strip -->
+  <Section compact>
+    <div class="reveal-on-scroll">
+      <MediaGalleryStrip />
+    </div>
+  </Section>
+
+  <!-- Extended Text -->
+  <Section class="border-t border-border">
+    <div class="max-w-2xl reveal-on-scroll">
+      <p class="text-text-secondary text-base md:text-lg leading-relaxed mb-6">
+        I'm drawn to experiences that feel alive — whether that's training, being on the road, exploring a city, or ending up at the right event with the right people.
+      </p>
+      <p class="text-text-secondary text-base md:text-lg leading-relaxed">
+        I value independence, depth, curiosity, self-development and a certain kind of edge.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Quote -->
+  <Section compact class="border-t border-border">
+    <div class="max-w-3xl reveal-on-scroll">
+      <QuoteBlock
+        text="This is who I am. This is what I build. This is what matters to me. If it resonates, reach out."
+      />
+    </div>
+  </Section>
+
+  <!-- Currently -->
+  <Section title="Currently" subtitle="Right now" class="border-t border-border" compact>
+    <div class="max-w-xl reveal-on-scroll">
+      <CurrentFocusList />
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

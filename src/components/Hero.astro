@@ -1,0 +1,100 @@
+---
+import { siteConfig } from '../data/site';
+---
+
+<section id="hero" class="relative min-h-screen flex flex-col justify-end overflow-hidden pt-32 pb-24 md:pb-32">
+  <!-- Full bleed background image -->
+  <!-- Note: We expect the user's cyberpunk image to be placed here -->
+  <div class="absolute inset-0 z-0">
+    <img 
+      src="/images/Gemini_Generated_Image_5b13j35b13j35b13.png" 
+      alt="Max Wels Cyberpunk Background" 
+      class="w-full h-full object-cover"
+      data-responsiveness="cover"
+    />
+    <!-- Cinematic dark overlay for text readability -->
+    <div class="absolute inset-0 bg-gradient-to-t from-bg-primary via-bg-primary/80 to-bg-primary/20"></div>
+    <div class="absolute inset-0 bg-black/40"></div>
+  </div>
+
+  <div class="mx-auto max-w-[1200px] px-6 md:px-10 relative z-10 w-full">
+    <div class="max-w-4xl reveal-on-scroll">
+      
+      <!-- Headline -->
+      <h1 class="font-display text-[clamp(4rem,10vw,8rem)] font-black uppercase tracking-tighter leading-[0.85] text-text-primary mb-6 text-glow">
+        MAX WELS
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="font-mono text-sm md:text-base tracking-[0.2em] uppercase text-text-secondary mb-10 max-w-2xl border-l-2 border-accent-green pl-4">
+        Data. Systems. Travel. Strength.
+      </p>
+
+      <!-- Description / Alternative Subheadline -->
+      <p class="text-xl md:text-2xl text-text-primary font-light leading-relaxed max-w-3xl mb-12">
+        I build structure, explore freedom, and work on projects that connect technology with real life.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap gap-4 md:gap-6 mt-12">
+        <a
+          href="#projects"
+          class="hero-btn"
+        >
+          View Projects
+        </a>
+        <a
+          href="/about"
+          class="hero-btn"
+        >
+          About Me
+        </a>
+        <a
+          href="/connect"
+          class="hero-btn"
+        >
+          Let's Talk
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-glow {
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Brutalist minimal button */
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 2rem;
+    background: transparent;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px solid var(--color-text-primary);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .hero-btn:hover {
+    color: var(--color-accent-green);
+    border-color: var(--color-accent-green);
+    background: rgba(0, 255, 0, 0.05);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-btn:hover {
+      transform: none;
+    }
+  }
+</style>

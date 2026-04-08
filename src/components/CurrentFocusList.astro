@@ -1,0 +1,22 @@
+---
+import { currentFocus } from '../data/site';
+
+interface Props {
+  items?: readonly string[];
+}
+
+const { items = currentFocus } = Astro.props;
+---
+
+<ul class="space-y-4">
+  {items.map((item, i) => (
+    <li class="flex items-start gap-4 group">
+      <span class="shrink-0 w-6 h-6 flex items-center justify-center border border-border rounded-sm text-accent-green font-mono text-xs mt-0.5 group-hover:border-accent-green/40 group-hover:bg-glow-green transition-all duration-300">
+        {String(i + 1).padStart(2, '0')}
+      </span>
+      <span class="text-text-secondary text-sm md:text-base leading-relaxed">
+        {item}
+      </span>
+    </li>
+  ))}
+</ul>

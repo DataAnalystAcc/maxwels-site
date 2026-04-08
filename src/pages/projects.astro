@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Section from '../components/Section.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<BaseLayout title="Projects" description="Selected projects in data analysis, automation, AI workflows, and operational structure.">
+  <Nav slot="nav" />
+
+  <!-- Page Hero -->
+  <section class="pt-16 md:pt-24 pb-12 relative">
+    <div class="mx-auto max-w-[1200px] px-6 md:px-10">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] text-accent-green mb-3 reveal-on-scroll">
+        Work
+      </p>
+      <h1 class="font-display text-[clamp(2rem,5vw,3.5rem)] font-bold tracking-tight text-text-primary leading-[1.1] mb-6 reveal-on-scroll">
+        Projects
+      </h1>
+      <p class="text-text-secondary text-lg leading-relaxed max-w-2xl reveal-on-scroll">
+        A selection of projects spanning data analysis, automation, AI workflows, and operational structure. Each represents a different way of turning complexity into clarity.
+      </p>
+    </div>
+  </section>
+
+  <!-- Projects Grid -->
+  <Section class="border-t border-border">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children">
+      {projects.map((project) => (
+        <ProjectCard
+          title={project.data.title}
+          description={project.data.description}
+          tags={project.data.tags}
+          image={project.data.image}
+          href={project.data.link || '#'}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- More coming -->
+  <Section compact class="border-t border-border">
+    <div class="text-center reveal-on-scroll">
+      <p class="font-mono text-xs uppercase tracking-widest text-text-muted mb-2">More projects coming</p>
+      <p class="text-sm text-text-secondary">
+        This section will grow as I document more of my work.
+      </p>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

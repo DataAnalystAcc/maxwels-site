@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background: #111; color: white; font-family: sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+  img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+  <h1>Gallery</h1>
+  <div class="grid" id="gallery"></div>
+  <script>
+    const files = [
+      "Blank Logo 4.png",
+      "Screenshot 2026-03-25 125348.png",
+      "Screenshot 2026-03-25 125450.png",
+      "Screenshot 2026-03-25 125520.png",
+      "Screenshot 2026-03-25 125544.png",
+      "Screenshot 2026-03-25 125611.png",
+      "Screenshot 2026-03-25 125645.png",
+      "Screenshot 2026-03-25 125716.png",
+      "Screenshot 2026-03-25 125739.png",
+      "Screenshot 2026-03-25 125904.png",
+      "Screenshot 2026-03-25 125921.png",
+      "Screenshot 2026-03-25 130000.png",
+      "Screenshot 2026-03-25 130045.png",
+      "Screenshot 2026-03-25 130150.png",
+      "Screenshot 2026-03-25 130227.png",
+      "Screenshot 2026-03-25 130250.png",
+      "Screenshot 2026-03-25 130344.png",
+      "Screenshot 2026-03-25 130419.png",
+      "Screenshot 2026-03-25 130448.png",
+      "Screenshot 2026-03-25 130523.png",
+      "Screenshot 2026-03-25 130618.png",
+      "Screenshot 2026-03-25 130647.png",
+      "Screenshot 2026-03-25 130724.png",
+      "Screenshot 2026-03-25 130755.png",
+      "Screenshot 2026-03-25 130831.png",
+      "Screenshot 2026-03-25 130917.png",
+      "Screenshot 2026-03-25 130950.png",
+      "Screenshot 2026-03-25 131105.png",
+      "Screenshot 2026-03-25 131143.png",
+      "Screenshot 2026-03-25 131225.png",
+      "Screenshot 2026-03-25 131251.png",
+      "photomode_11012025_184739.png",
+      "photomode_13012025_032442.png",
+      "photomode_14012025_055306.png",
+      "photomode_29122024_225116.png"
+    ];
+    const grid = document.getElementById('gallery');
+    files.forEach(f => {
+      grid.innerHTML += `<div><img src="${f}" loading="lazy"><br><small>${f}</small></div>`;
+    });
+  </script>
+</body>
+</html>

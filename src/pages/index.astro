@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import SkillCard from '../components/SkillCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import LifeCard from '../components/LifeCard.astro';
+import CurrentFocusList from '../components/CurrentFocusList.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import QuoteBlock from '../components/QuoteBlock.astro';
+import { skills, skillTags, lifeCards } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout>
+  <Nav slot="nav" />
+
+  <!-- Hero — Custom Image Full-Bleed -->
+  <Hero />
+
+  <!-- About Preview -->
+  <Section id="about-preview" title="Not just a freelancer. Not just a traveler." class="border-t border-border">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 reveal-on-scroll">
+      <div class="lg:col-span-3">
+        <p class="text-text-secondary text-base md:text-lg leading-relaxed mb-6">
+          I build structure, explore freedom, and work on projects that connect technology with real life.
+        </p>
+        <p class="text-text-secondary text-base md:text-lg leading-relaxed mb-8">
+          My focus is on data, systems, automation, and intelligent workflows. Beyond the screen, I train in calisthenics, travel off the grid, and stay grounded in the physical world. No fluff, just momentum and clarity.
+        </p>
+        <a href="/about" class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-text-muted hover:text-accent-green transition-colors duration-300">
+          Read more about me
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="lg:col-span-2">
+        <!-- Portrait placeholder -->
+        <div class="relative aspect-[3/4] rounded-sm overflow-hidden bg-bg-elevated border border-border">
+          <img
+            src="/images/portrait-placeholder.jpg"
+            alt="Max Wels portrait"
+            class="w-full h-full object-cover opacity-80"
+            loading="lazy"
+            onerror="this.style.display='none'; this.parentElement.classList.add('flex','items-center','justify-center'); const s = document.createElement('span'); s.className='text-text-muted text-xs font-mono text-center px-4'; s.textContent='[ Replace with portrait image: /public/images/portrait-placeholder.jpg ]'; this.parentElement.appendChild(s);"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-bg-primary/30 to-transparent"></div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Skills -->
+  <Section id="skills" title="What I do" subtitle="Skills & focus" class="border-t border-border">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 stagger-children">
+      {skills.map((skill) => (
+        <SkillCard
+          title={skill.title}
+          description={skill.description}
+          icon={skill.icon}
+        />
+      ))}
+    </div>
+
+    <!-- Skill tags -->
+    <div class="mt-10 flex flex-wrap gap-2 reveal-on-scroll">
+      {skillTags.map((tag) => (
+        <span class="font-mono text-[11px] tracking-wider text-text-muted px-3 py-1.5 border border-border-subtle rounded-sm hover:border-border hover:text-text-secondary transition-all duration-200">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Projects -->
+  <Section id="projects" title="Selected Projects" subtitle="Work" class="border-t border-border">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children">
+      {projects.map((project) => (
+        <ProjectCard
+          title={project.data.title}
+          description={project.data.description}
+          tags={project.data.tags}
+          image={project.data.image}
+          href={`/projects`}
+        />
+      ))}
+    </div>
+
+    <div class="mt-10 reveal-on-scroll">
+      <a href="/projects" class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-text-muted hover:text-accent-green transition-colors duration-300">
+        See all projects
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </Section>
+
+  <!-- Life -->
+  <Section id="life" title="Beyond work" subtitle="Life" class="border-t border-border">
+    <div class="max-w-2xl mb-10 reveal-on-scroll">
+      <p class="text-text-secondary text-base leading-relaxed">
+        I believe in discipline, aesthetic, and living intensely. From training calisthenics to traveling across borders and exploring dark subcultures, I build a life completely by design.
+      </p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-children">
+      {lifeCards.map((card) => (
+        <LifeCard
+          title={card.title}
+          description={card.description}
+          icon={card.icon}
+        />
+      ))}
+    </div>
+    <div class="mt-8 reveal-on-scroll">
+      <a href="/life" class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-text-muted hover:text-accent-green transition-colors duration-300">
+        More about my life
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </Section>
+
+  <!-- Currently -->
+  <Section id="currently" title="Currently" subtitle="Right now" class="border-t border-border" compact>
+    <div class="max-w-xl reveal-on-scroll">
+      <CurrentFocusList />
+    </div>
+  </Section>
+
+  <!-- Connect -->
+  <Section id="connect" title="Let's connect" subtitle="Say hello" class="border-t border-border">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 reveal-on-scroll">
+      <div>
+        <p class="text-text-secondary text-base md:text-lg leading-relaxed mb-8">
+          Whether it's about projects, ideas, travel, collaboration or simply a good conversation — feel free to reach out.
+        </p>
+        <SocialLinks variant="stack" />
+      </div>
+      <div class="flex items-end">
+        <QuoteBlock
+          text="I'm always open to interesting people, good conversations, creative ideas and meaningful connections."
+        />
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

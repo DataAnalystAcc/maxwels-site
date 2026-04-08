@@ -1,0 +1,59 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  tags?: string[];
+  href?: string;
+  image?: string;
+}
+
+const { title, description, tags = [], href, image } = Astro.props;
+---
+
+<article class="group relative">
+  <a
+    href={href || '#'}
+    class="block bg-bg-elevated border border-border rounded-sm p-6 md:p-8 card-hover h-full"
+  >
+    <!-- Image placeholder -->
+    {image && (
+      <div class="relative w-full h-48 mb-6 rounded-sm overflow-hidden bg-bg-elevated">
+        <img
+          src={image}
+          alt={title}
+          class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-bg-surface/60 to-transparent" />
+      </div>
+    )}
+
+    <!-- Content -->
+    <div>
+      <!-- Tags -->
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-4">
+          {tags.slice(0, 3).map((tag) => (
+            <span class="font-mono text-[10px] uppercase tracking-widest text-text-muted px-2 py-1 border border-border-subtle rounded-sm">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <h3 class="font-display text-xl md:text-2xl font-semibold tracking-tight text-text-primary mb-3 group-hover:text-accent-green transition-colors duration-300">
+        {title}
+      </h3>
+
+      <p class="text-sm text-text-secondary leading-relaxed">
+        {description}
+      </p>
+
+      <!-- Arrow indicator -->
+      <div class="mt-6 flex items-center gap-2 text-text-muted group-hover:text-accent-green transition-all duration-300">
+        <span class="font-mono text-xs uppercase tracking-widest">View project</span>
+        <span class="transform group-hover:translate-x-1 transition-transform duration-300" aria-hidden="true">→</span>
+      </div>
+    </div>
+  </a>
+</article>

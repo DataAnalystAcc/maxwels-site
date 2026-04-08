@@ -1,0 +1,162 @@
+---
+import { navLinks, siteConfig } from '../data/site';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  id="site-nav"
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+>
+  <nav
+    class="mx-auto max-w-[1400px] flex items-center justify-between px-6 py-5 md:px-10"
+    aria-label="Main navigation"
+  >
+    <!-- Logo -->
+    <a
+      href="/"
+      class="font-display text-lg font-semibold tracking-tight text-text-primary hover:text-accent-green transition-colors duration-300"
+    >
+      {siteConfig.name}
+    </a>
+
+    <!-- Desktop Nav -->
+    <ul class="hidden md:flex items-center gap-8">
+      {
+        navLinks.map((link) => {
+          const isActive =
+            currentPath === link.href ||
+            (link.href !== '/' && currentPath.startsWith(link.href));
+          return (
+            <li>
+              <a
+                href={link.href}
+                class:list={[
+                  'relative font-body text-sm tracking-wide transition-colors duration-300',
+                  isActive
+                    ? 'text-text-primary'
+                    : 'text-text-muted hover:text-text-secondary',
+                ]}
+              >
+                {link.label}
+                {isActive && (
+                  <span class="absolute -bottom-1 left-0 w-full h-px bg-accent-green" />
+                )}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-btn"
+      class="md:hidden relative w-8 h-8 flex items-center justify-center text-text-primary"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <span id="hamburger-icon" class="block">
+        <span class="block w-5 h-px bg-current mb-1.5 transition-all duration-300 origin-center"></span>
+        <span class="block w-5 h-px bg-current mb-1.5 transition-all duration-300"></span>
+        <span class="block w-3.5 h-px bg-current transition-all duration-300 origin-center"></span>
+      </span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div
+    id="mobile-menu"
+    class="md:hidden fixed inset-0 top-[72px] bg-bg-primary/98 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 z-40"
+  >
+    <ul class="flex flex-col items-start gap-6 p-8 pt-12">
+      {
+        navLinks.map((link, i) => {
+          const isActive =
+            currentPath === link.href ||
+            (link.href !== '/' && currentPath.startsWith(link.href));
+          return (
+            <li style={`transition-delay: ${i * 60}ms`} class="mobile-nav-item opacity-0 translate-y-4 transition-all duration-400">
+              <a
+                href={link.href}
+                class:list={[
+                  'font-display text-3xl font-medium tracking-tight transition-colors duration-300',
+                  isActive
+                    ? 'text-accent-green'
+                    : 'text-text-primary hover:text-accent-green',
+                ]}
+              >
+                {link.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</header>
+
+<!-- Spacer for fixed nav -->
+<div class="h-[72px]"></div>
+
+<script>
+  const nav = document.getElementById('site-nav');
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  let isMenuOpen = false;
+
+  // Scroll effect
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.scrollY;
+
+    if (nav) {
+      if (currentScroll > 50) {
+        nav.classList.add('bg-bg-primary/80', 'backdrop-blur-xl', 'border-b', 'border-border-subtle');
+      } else {
+        nav.classList.remove('bg-bg-primary/80', 'backdrop-blur-xl', 'border-b', 'border-border-subtle');
+      }
+    }
+
+    lastScroll = currentScroll;
+  });
+
+  // Mobile menu toggle
+  menuBtn?.addEventListener('click', () => {
+    isMenuOpen = !isMenuOpen;
+    menuBtn.setAttribute('aria-expanded', String(isMenuOpen));
+
+    if (mobileMenu) {
+      if (isMenuOpen) {
+        mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+        mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+        document.body.style.overflow = 'hidden';
+        // Animate items in
+        mobileMenu.querySelectorAll('.mobile-nav-item').forEach((item) => {
+          (item as HTMLElement).classList.remove('opacity-0', 'translate-y-4');
+        });
+      } else {
+        mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+        mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+        document.body.style.overflow = '';
+        mobileMenu.querySelectorAll('.mobile-nav-item').forEach((item) => {
+          (item as HTMLElement).classList.add('opacity-0', 'translate-y-4');
+        });
+      }
+    }
+
+    // Animate hamburger
+    const lines = menuBtn.querySelectorAll('#hamburger-icon span');
+    if (isMenuOpen) {
+      (lines[0] as HTMLElement).style.transform = 'rotate(45deg) translate(2px, 4px)';
+      (lines[1] as HTMLElement).style.opacity = '0';
+      (lines[2] as HTMLElement).style.transform = 'rotate(-45deg) translate(3px, -5px)';
+      (lines[2] as HTMLElement).style.width = '20px';
+    } else {
+      (lines[0] as HTMLElement).style.transform = '';
+      (lines[1] as HTMLElement).style.opacity = '1';
+      (lines[2] as HTMLElement).style.transform = '';
+      (lines[2] as HTMLElement).style.width = '';
+    }
+  });
+</script>

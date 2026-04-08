@@ -1,0 +1,794 @@
+---
+/**
+ * HeroLogoIntro.astro
+ * Premium animated cyberpunk hero with layered logo reveal.
+ *
+ * Inspired by the 9elements.com hero interaction principles:
+ * - multi-layered composition with independent motion
+ * - deliberate intro sequence → calm idle state
+ * - mouse-driven parallax via CSS custom properties
+ * - glitch/scan effects for tech atmosphere
+ *
+ * Adapted for Max Wels brand: dark, minimal, sharp, technical.
+ * Uses CSS transforms/opacity for performance, SVG for masking/effects,
+ * and lightweight JS for parallax + intro orchestration.
+ */
+import { siteConfig } from '../data/site';
+---
+
+<section id="hero" class="hero-intro" aria-label="Hero introduction">
+  <!-- Performance: all animated layers use will-change and transform/opacity only -->
+
+  <!-- ===== BACKGROUND LAYERS ===== -->
+  <!-- Noise texture overlay for depth -->
+  <div class="hero-noise" aria-hidden="true"></div>
+
+  <!-- Grid overlay — technical feel -->
+  <div class="hero-grid" aria-hidden="true"></div>
+
+  <!-- Ambient glow orbs — parallax layer 1 (slow) -->
+  <div class="hero-glow hero-glow--cyan" aria-hidden="true" data-parallax="0.02"></div>
+  <div class="hero-glow hero-glow--purple" aria-hidden="true" data-parallax="0.015"></div>
+  <div class="hero-glow hero-glow--blue" aria-hidden="true" data-parallax="0.025"></div>
+
+  <!-- ===== EMBLEM / LOGO LAYER ===== -->
+  <div class="hero-emblem-container" data-parallax="0.04">
+    <!-- Outer ring — rotates slowly in idle -->
+    <svg class="hero-ring hero-ring--outer" viewBox="0 0 400 400" fill="none" aria-hidden="true">
+      <circle cx="200" cy="200" r="180" stroke="url(#ringGradient)" stroke-width="0.5" opacity="0.4"/>
+      <circle cx="200" cy="200" r="160" stroke="url(#ringGradient)" stroke-width="0.3" opacity="0.2" stroke-dasharray="4 8"/>
+      <!-- Tick marks around the ring -->
+      {Array.from({length: 72}).map((_, i) => {
+        const angle = (i * 5) * Math.PI / 180;
+        const inner = i % 9 === 0 ? 145 : 152;
+        const outer = 158;
+        return (
+          <line
+            x1={200 + inner * Math.cos(angle)}
+            y1={200 + inner * Math.sin(angle)}
+            x2={200 + outer * Math.cos(angle)}
+            y2={200 + outer * Math.sin(angle)}
+            stroke="#00f3ff"
+            stroke-width={i % 9 === 0 ? "1" : "0.3"}
+            opacity={i % 9 === 0 ? "0.5" : "0.15"}
+          />
+        );
+      })}
+      <defs>
+        <linearGradient id="ringGradient" x1="0" y1="0" x2="400" y2="400">
+          <stop offset="0%" stop-color="#00f3ff" stop-opacity="0.6"/>
+          <stop offset="50%" stop-color="#0066ff" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#bf00ff" stop-opacity="0.4"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <!-- Inner ring — counter-rotates -->
+    <svg class="hero-ring hero-ring--inner" viewBox="0 0 400 400" fill="none" aria-hidden="true">
+      <circle cx="200" cy="200" r="120" stroke="#00f3ff" stroke-width="0.4" opacity="0.2" stroke-dasharray="2 6"/>
+      <circle cx="200" cy="200" r="100" stroke="#0066ff" stroke-width="0.3" opacity="0.15"/>
+    </svg>
+
+    <!-- BII Monogram — the core logo mark -->
+    <div class="hero-monogram">
+      <svg class="hero-bii-mark" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <!-- B character — geometric/technical style -->
+        <g class="bii-letter bii-b" opacity="0">
+          <path d="M50 40h35c15 0 25 8 25 22s-8 20-20 22v1c15 2 24 12 24 26 0 16-12 27-30 27H50V40z M68 78h14c10 0 16-5 16-14s-6-14-16-14H68v28z M68 128h16c12 0 19-6 19-16s-7-16-19-16H68v32z"
+              fill="url(#monoGradient)" />
+        </g>
+        <!-- II characters — twin pillars -->
+        <g class="bii-letter bii-ii" opacity="0">
+          <rect x="120" y="40" width="8" height="98" fill="url(#monoGradient)" />
+          <rect x="138" y="40" width="8" height="98" fill="url(#monoGradient)" />
+          <!-- Top serifs -->
+          <rect x="115" y="40" width="18" height="3" fill="url(#monoGradient)" />
+          <rect x="133" y="40" width="18" height="3" fill="url(#monoGradient)" />
+          <!-- Bottom serifs -->
+          <rect x="115" y="135" width="18" height="3" fill="url(#monoGradient)" />
+          <rect x="133" y="135" width="18" height="3" fill="url(#monoGradient)" />
+        </g>
+        <!-- Cross accent above B — brand detail -->
+        <g class="bii-accent" opacity="0">
+          <line x1="85" y1="25" x2="85" y2="35" stroke="#00f3ff" stroke-width="1.5"/>
+          <line x1="80" y1="30" x2="90" y2="30" stroke="#00f3ff" stroke-width="1.5"/>
+        </g>
+        <defs>
+          <linearGradient id="monoGradient" x1="50" y1="40" x2="150" y2="140">
+            <stop offset="0%" stop-color="#e8e8e8"/>
+            <stop offset="40%" stop-color="#f0f0f0"/>
+            <stop offset="100%" stop-color="#a0a0a0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- Light sweep overlay — animates across the monogram -->
+      <div class="hero-light-sweep" aria-hidden="true"></div>
+    </div>
+
+    <!-- Scanline overlay on emblem -->
+    <div class="hero-scanlines" aria-hidden="true"></div>
+  </div>
+
+  <!-- ===== DECORATIVE ELEMENTS ===== -->
+  <!-- Floating data fragments — parallax layer 2 -->
+  <div class="hero-fragments" aria-hidden="true" data-parallax="0.06">
+    <span class="hero-frag hero-frag--1">01100</span>
+    <span class="hero-frag hero-frag--2">SYS</span>
+    <span class="hero-frag hero-frag--3">_init</span>
+    <span class="hero-frag hero-frag--4">▸▸</span>
+    <span class="hero-frag hero-frag--5">0x4F</span>
+  </div>
+
+  <!-- Horizontal accent lines -->
+  <div class="hero-hline hero-hline--top" aria-hidden="true"></div>
+  <div class="hero-hline hero-hline--bottom" aria-hidden="true"></div>
+
+  <!-- ===== CONTENT LAYER ===== -->
+  <div class="hero-content">
+    <div class="hero-content-inner">
+      <!-- Name -->
+      <h1 class="hero-name">
+        <span class="hero-name-text">{siteConfig.name}</span>
+      </h1>
+
+      <!-- Tagline -->
+      <p class="hero-tagline">
+        <span class="hero-tagline-inner">
+          {siteConfig.tagline.split('. ').map((word, i) => (
+            <span class="hero-tagline-word" style={`--word-i: ${i}`}>
+              {word}{i < siteConfig.tagline.split('. ').length - 1 ? '.' : ''}&nbsp;
+            </span>
+          ))}
+        </span>
+      </p>
+
+      <!-- Description -->
+      <p class="hero-description">
+        {siteConfig.description}
+      </p>
+
+      <!-- CTAs -->
+      <div class="hero-ctas">
+        <a href="/projects" class="hero-cta hero-cta--primary">
+          <span class="hero-cta-text">View Projects</span>
+          <span class="hero-cta-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/connect" class="hero-cta hero-cta--secondary">
+          <span class="hero-cta-text">Book a Call</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom gradient fade -->
+  <div class="hero-fade-bottom" aria-hidden="true"></div>
+</section>
+
+<style>
+  /* ==========================================
+     HERO LAYOUT
+     ========================================== */
+  .hero-intro {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #050508;
+    /* CSS vars set by JS for parallax */
+    --mx: 0;
+    --my: 0;
+  }
+
+  /* ==========================================
+     BACKGROUND LAYERS
+     ========================================== */
+
+  /* Film grain noise */
+  .hero-noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Subtle grid */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image:
+      linear-gradient(rgba(0, 243, 255, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 243, 255, 0.3) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Ambient glow orbs */
+  .hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    animation: hero-glow-in 2s ease-out 0.5s forwards;
+    will-change: transform, opacity;
+    transform: translate(
+      calc(var(--mx) * var(--px, 0) * 1px),
+      calc(var(--my) * var(--py, 0) * 1px)
+    );
+  }
+
+  .hero-glow--cyan {
+    width: 500px;
+    height: 500px;
+    background: rgba(0, 243, 255, 0.08);
+    top: -15%;
+    right: 5%;
+    --px: 20;
+    --py: 15;
+  }
+
+  .hero-glow--purple {
+    width: 400px;
+    height: 400px;
+    background: rgba(191, 0, 255, 0.06);
+    bottom: -10%;
+    left: -5%;
+    --px: -15;
+    --py: -10;
+  }
+
+  .hero-glow--blue {
+    width: 350px;
+    height: 350px;
+    background: rgba(0, 102, 255, 0.05);
+    top: 40%;
+    left: 30%;
+    --px: 10;
+    --py: 20;
+  }
+
+  /* ==========================================
+     EMBLEM / LOGO
+     ========================================== */
+  .hero-emblem-container {
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%) translate(
+      calc(var(--mx) * 40 * 1px),
+      calc(var(--my) * 30 * 1px)
+    );
+    width: min(420px, 50vw);
+    height: min(420px, 50vw);
+    z-index: 2;
+    will-change: transform;
+  }
+
+  .hero-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+
+  .hero-ring--outer {
+    animation: hero-ring-in 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards,
+               hero-ring-spin 120s linear 2s infinite;
+  }
+
+  .hero-ring--inner {
+    animation: hero-ring-in 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards,
+               hero-ring-spin-reverse 90s linear 2s infinite;
+  }
+
+  .hero-monogram {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55%;
+    height: 55%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bii-mark {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* SVG letter reveal — staggered */
+  .bii-b {
+    animation: hero-letter-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+  }
+  .bii-ii {
+    animation: hero-letter-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards;
+  }
+  .bii-accent {
+    animation: hero-letter-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+  }
+
+  /* Light sweep across monogram */
+  .hero-light-sweep {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 243, 255, 0.08) 40%,
+      rgba(0, 243, 255, 0.15) 50%,
+      rgba(0, 243, 255, 0.08) 60%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+    animation: hero-sweep 4s ease-in-out 1.5s forwards;
+    opacity: 0;
+  }
+
+  /* Scanlines over emblem */
+  .hero-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 243, 255, 0.015) 2px,
+      rgba(0, 243, 255, 0.015) 4px
+    );
+    pointer-events: none;
+    opacity: 0;
+    animation: hero-fade-in 1s ease 1s forwards;
+    mix-blend-mode: screen;
+  }
+
+  /* ==========================================
+     FLOATING FRAGMENTS
+     ========================================== */
+  .hero-fragments {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    will-change: transform;
+    transform: translate(
+      calc(var(--mx) * 60 * 1px),
+      calc(var(--my) * 50 * 1px)
+    );
+  }
+
+  .hero-frag {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(0, 243, 255, 0.2);
+    opacity: 0;
+    animation: hero-frag-in 0.6s ease forwards;
+  }
+
+  .hero-frag--1 { top: 18%; left: 12%; animation-delay: 1.2s; }
+  .hero-frag--2 { top: 25%; right: 15%; animation-delay: 1.4s; }
+  .hero-frag--3 { bottom: 30%; left: 8%; animation-delay: 1.6s; }
+  .hero-frag--4 { bottom: 22%; right: 10%; animation-delay: 1.3s; }
+  .hero-frag--5 { top: 60%; right: 20%; animation-delay: 1.5s; }
+
+  /* ==========================================
+     HORIZONTAL ACCENT LINES
+     ========================================== */
+  .hero-hline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    z-index: 3;
+    opacity: 0;
+    animation: hero-hline-in 1.2s ease 0.6s forwards;
+  }
+
+  .hero-hline--top {
+    top: 15%;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 243, 255, 0.12) 30%, rgba(0, 102, 255, 0.08) 70%, transparent 100%);
+  }
+
+  .hero-hline--bottom {
+    bottom: 12%;
+    background: linear-gradient(90deg, transparent 0%, rgba(191, 0, 255, 0.08) 40%, rgba(0, 243, 255, 0.06) 80%, transparent 100%);
+    animation-delay: 0.8s;
+  }
+
+  /* ==========================================
+     CONTENT
+     ========================================== */
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .hero-content-inner {
+    max-width: 560px;
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+  }
+
+  .hero-name {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: #f0f0f0;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+  }
+
+  .hero-name-text {
+    display: block;
+    opacity: 0;
+    transform: translateY(100%);
+    animation: hero-text-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+  }
+
+  .hero-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.75rem;
+    overflow: hidden;
+  }
+
+  .hero-tagline-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.3em;
+  }
+
+  .hero-tagline-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-word-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(0.9s + var(--word-i) * 0.12s);
+    color: #00f3ff;
+  }
+
+  .hero-description {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+    line-height: 1.7;
+    color: #a0a0a0;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-text-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.3s forwards;
+  }
+
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-text-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.5s forwards;
+  }
+
+  /* Primary CTA — neon cyan */
+  .hero-cta--primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.8rem;
+    background: #00f3ff;
+    color: #050508;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-cta--primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .hero-cta--primary:hover {
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3), 0 0 60px rgba(0, 243, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .hero-cta--primary:hover::before {
+    opacity: 1;
+  }
+
+  /* Secondary CTA — ghost style */
+  .hero-cta--secondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.8rem;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    color: #e0e0e0;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .hero-cta--secondary:hover {
+    border-color: rgba(0, 243, 255, 0.5);
+    color: #00f3ff;
+    background: rgba(0, 243, 255, 0.04);
+  }
+
+  .hero-cta-arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+  }
+
+  .hero-cta--primary:hover .hero-cta-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Bottom fade */
+  .hero-fade-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, #0a0a0a);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* ==========================================
+     KEYFRAMES
+     ========================================== */
+
+  @keyframes hero-glow-in {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1) translate(
+      calc(var(--mx) * var(--px, 0) * 1px),
+      calc(var(--my) * var(--py, 0) * 1px)
+    ); }
+  }
+
+  @keyframes hero-ring-in {
+    from { opacity: 0; transform: scale(0.6) rotate(-30deg); }
+    to { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+
+  @keyframes hero-ring-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes hero-ring-spin-reverse {
+    to { transform: rotate(-360deg); }
+  }
+
+  @keyframes hero-letter-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes hero-sweep {
+    0% { left: -100%; opacity: 0; }
+    10% { opacity: 1; }
+    100% { left: 200%; opacity: 0; }
+  }
+
+  @keyframes hero-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes hero-frag-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes hero-hline-in {
+    from { opacity: 0; clip-path: inset(0 50%); }
+    to { opacity: 1; clip-path: inset(0 0%); }
+  }
+
+  @keyframes hero-text-up {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes hero-word-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes hero-text-reveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Idle breathing for glow orbs */
+  @keyframes hero-breathe {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* ==========================================
+     RESPONSIVE
+     ========================================== */
+  @media (max-width: 768px) {
+    .hero-emblem-container {
+      width: 280px;
+      height: 280px;
+      left: 50%;
+      top: 25%;
+      opacity: 0.25;
+    }
+
+    .hero-content-inner {
+      padding-top: 12rem;
+      max-width: 100%;
+    }
+
+    .hero-name {
+      font-size: clamp(2.4rem, 10vw, 3.5rem);
+    }
+
+    .hero-frag { display: none; }
+
+    .hero-glow--cyan { width: 300px; height: 300px; }
+    .hero-glow--purple { width: 250px; height: 250px; }
+    .hero-glow--blue { display: none; }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .hero-emblem-container {
+      width: 320px;
+      height: 320px;
+      left: 55%;
+    }
+  }
+
+  /* ==========================================
+     REDUCED MOTION
+     ========================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-intro * {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .hero-name-text,
+    .hero-tagline-word,
+    .hero-description,
+    .hero-ctas,
+    .hero-ring,
+    .hero-glow,
+    .hero-frag,
+    .hero-hline,
+    .hero-scanlines {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .hero-ring--outer,
+    .hero-ring--inner {
+      animation: none !important;
+      opacity: 0.5 !important;
+    }
+
+    .hero-light-sweep {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Hero parallax and idle animation controller.
+   * - Tracks mouse position and sets CSS custom properties
+   * - Uses requestAnimationFrame for smooth updates
+   * - Pauses when hero is offscreen (IntersectionObserver)
+   * - Respects prefers-reduced-motion
+   */
+  (() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const hero = document.querySelector('.hero-intro') as HTMLElement;
+    if (!hero) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let isVisible = true;
+    let rafId: number;
+
+    // Smooth lerp for parallax
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    // Normalise mouse position to -1...1 range centered on viewport
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+
+    const tick = () => {
+      if (!isVisible) {
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+
+      // Ease towards target (0.04 = gentle follow)
+      currentX = lerp(currentX, mouseX, 0.04);
+      currentY = lerp(currentY, mouseY, 0.04);
+
+      hero.style.setProperty('--mx', currentX.toFixed(4));
+      hero.style.setProperty('--my', currentY.toFixed(4));
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    // Only animate when hero is in viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(hero);
+
+    // Start after intro animations have settled
+    setTimeout(() => {
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+      rafId = requestAnimationFrame(tick);
+    }, 800);
+
+    // Add idle breathing to glow orbs after intro
+    setTimeout(() => {
+      hero.querySelectorAll('.hero-glow').forEach((glow) => {
+        (glow as HTMLElement).style.animation = 'hero-breathe 6s ease-in-out infinite';
+      });
+    }, 3000);
+
+    // Cleanup on navigation (Astro view transitions)
+    document.addEventListener('astro:before-swap', () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
+    });
+  })();
+</script>

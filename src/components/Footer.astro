@@ -1,0 +1,55 @@
+---
+import { siteConfig, socialLinks } from '../data/site';
+import SocialLinks from './SocialLinks.astro';
+---
+
+<footer class="border-t border-border mt-auto">
+  <div class="mx-auto max-w-[1200px] px-6 md:px-10 py-16 md:py-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+      <!-- Brand -->
+      <div>
+        <a
+          href="/"
+          class="font-display text-xl font-semibold tracking-tight text-text-primary hover:text-accent-green transition-colors duration-300"
+        >
+          {siteConfig.name}
+        </a>
+        <p class="mt-3 text-sm text-text-muted leading-relaxed max-w-xs">
+          {siteConfig.tagline}
+        </p>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <h3 class="font-mono text-xs uppercase tracking-widest text-text-muted mb-4">
+          Navigate
+        </h3>
+        <ul class="space-y-3">
+          <li><a href="/" class="text-sm text-text-secondary hover:text-text-primary transition-colors duration-200">Home</a></li>
+          <li><a href="/projects" class="text-sm text-text-secondary hover:text-text-primary transition-colors duration-200">Projects</a></li>
+          <li><a href="/about" class="text-sm text-text-secondary hover:text-text-primary transition-colors duration-200">About</a></li>
+          <li><a href="/life" class="text-sm text-text-secondary hover:text-text-primary transition-colors duration-200">Life</a></li>
+          <li><a href="/connect" class="text-sm text-text-secondary hover:text-text-primary transition-colors duration-200">Connect</a></li>
+        </ul>
+      </div>
+
+      <!-- Social -->
+      <div>
+        <h3 class="font-mono text-xs uppercase tracking-widest text-text-muted mb-4">
+          Connect
+        </h3>
+        <SocialLinks variant="stack" />
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="mt-16 pt-8 border-t border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <p class="text-xs text-text-muted">
+        &copy; {new Date().getFullYear()} {siteConfig.name}. Built with depth and direction.
+      </p>
+      <p class="text-xs text-text-muted font-mono">
+        Built with Astro
+      </p>
+    </div>
+  </div>
+</footer>

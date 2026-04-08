@@ -1,0 +1,45 @@
+---
+interface Props {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  class?: string;
+  innerClass?: string;
+  compact?: boolean;
+}
+
+const {
+  id,
+  title,
+  subtitle,
+  class: className = '',
+  innerClass = '',
+  compact = false,
+} = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={[
+    compact ? 'py-(--spacing-section-sm)' : 'py-(--spacing-section)',
+    className,
+  ]}
+>
+  <div class:list={['mx-auto max-w-[1200px] px-6 md:px-10', innerClass]}>
+    {(title || subtitle) && (
+      <div class="mb-12 md:mb-16 reveal-on-scroll">
+        {subtitle && (
+          <p class="font-mono text-xs uppercase tracking-[0.2em] text-accent-green mb-3">
+            {subtitle}
+          </p>
+        )}
+        {title && (
+          <h2 class="font-display text-[clamp(1.75rem,4vw,2.75rem)] font-semibold tracking-tight text-text-primary leading-[1.15]">
+            {title}
+          </h2>
+        )}
+      </div>
+    )}
+    <slot />
+  </div>
+</section>
