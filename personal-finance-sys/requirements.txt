@@ -1,0 +1,10 @@
+pandas
+sqlalchemy
+alembic
+streamlit
+pytest
+jupyterlab
+python-dotenv
+lxml
+pydantic
+plotly

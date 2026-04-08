@@ -1,0 +1,85 @@
+{
+  "name": "04_discover_news",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://lead-enricher-api:8000/api/news",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "company_name",
+              "value": "={{ $json.company_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "HTTP Request: News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [200, 0]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "headline_1",
+              "value": "={{ $json.articles[0]?.title || '' }}"
+            },
+            {
+              "name": "summary_1",
+              "value": "={{ $json.articles[0]?.summary || '' }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "news_relevance",
+              "value": "={{ $json.average_relevance || 0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Headlines",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [400, 0]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: News": {
+      "main": [
+        [
+          {
+            "node": "Extract Headlines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {}
+}

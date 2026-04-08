@@ -1,0 +1,86 @@
+{
+  "name": "03_enrich_company",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://lead-enricher-api:8000/api/enrich",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "company_id",
+              "value": "={{ $json.company_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "HTTP Request: Enrich",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [200, 0],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "website",
+              "value": "={{ $json.website || 'unknown' }}"
+            },
+            {
+              "name": "industry",
+              "value": "={{ $json.industry || 'unknown' }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "enrichment_confidence",
+              "value": "={{ $json.confidence || 0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Store Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [400, 0]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Enrich",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Enrich": {
+      "main": [
+        [
+          {
+            "node": "Store Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {}
+}

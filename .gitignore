@@ -15,10 +15,20 @@ pnpm-debug.log*
 
 # environment variables
 .env
-.env.production
+.env.*
+*.env
 
-# macOS-specific files
+# databases
+*.db
+*.sqlite3
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+ENV/
+
+# OS-specific files
 .DS_Store
-
-# jetbrains setting folder
-.idea/
+Thumbs.db

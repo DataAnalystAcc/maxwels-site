@@ -1,0 +1,104 @@
+{
+  "name": "06_find_contacts",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://lead-enricher-api:8000/api/contacts/discover",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "={{ $json.site_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "HTTP Request: Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [200, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.contact_type }}",
+              "operation": "notEqual",
+              "value2": "generic"
+            }
+          ]
+        }
+      },
+      "name": "Filter Generic",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "notes": "Never treat generic company email as personal verified email",
+      "position": [400, 0]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "contact_status",
+              "value": "VERIFIED_PERSON"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Valid Contact",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [600, -100]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Contacts": {
+      "main": [
+        [
+          {
+            "node": "Filter Generic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Generic": {
+      "main": [
+        [
+          {
+            "node": "Valid Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {}
+}
