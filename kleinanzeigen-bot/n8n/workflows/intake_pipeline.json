@@ -1,0 +1,103 @@
+{
+  "name": "Kleinanzeigen Intake Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "item-intake",
+        "options": {}
+      },
+      "id": "e9a0e6b8-2e1d-4f1e-8e8e-8e8e8e8e8e8e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ],
+      "webhookId": "item-intake"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://core-api:8000/api/drafts/generate",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "listing_id",
+              "value": "={{ $json.body.listing_id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "f8b1c7d9-3f2e-4a1b-9c8d-7e6f5a4b3c2d",
+      "name": "Trigger Draft Generation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Webhook\"].json.body.chat_id }}",
+        "text": "=✅ Draft ready: {{ $json.recommended_price }}€ - {{ $json.title }}\n\nReview it here: http://{{ $node[\"Webhook\"].json.body.vps_ip }}:8001/review",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "a1b2c3d4-e5f6-4a1b-8c9d-0e1f2a3b4c5d",
+      "name": "Notify User",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_bot_creds",
+          "name": "Listing Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Trigger Draft Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Draft Generation": {
+      "main": [
+        [
+          {
+            "node": "Notify User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": null
+  },
+  "pinData": {},
+  "active": true
+}

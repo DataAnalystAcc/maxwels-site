@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kleinanzeigen Listing Bot — Review and approve draft listings">
+    <title>📦 Kleinanzeigen Bot — Review Queue</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header id="app-header">
+        <div class="header-left">
+            <h1>📦 Listing Queue</h1>
+            <div class="header-stats" id="header-stats"></div>
+        </div>
+        <div class="header-right">
+            <select id="filter-status" class="filter-select">
+                <option value="">All Statuses</option>
+                <option value="draft_ready" selected>Draft Ready</option>
+                <option value="approved">Approved</option>
+                <option value="posted">Posted</option>
+                <option value="posting_failed">Failed</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <button class="btn btn-secondary" id="btn-bulk-approve">✅ Approve All High</button>
+            <button class="btn btn-primary" id="btn-start-posting">🚀 Start Posting</button>
+        </div>
+    </header>
+
+    <main id="app-main">
+        <aside id="card-list" class="card-list">
+            <div id="cards-container"></div>
+        </aside>
+
+        <section id="detail-panel" class="detail-panel">
+            <div id="detail-empty" class="detail-empty">
+                <p>← Select an item to review</p>
+            </div>
+            <div id="detail-content" class="detail-content" style="display:none">
+                <!-- Image Gallery -->
+                <div class="image-gallery" id="image-gallery">
+                    <img id="gallery-main-image" class="gallery-main" src="" alt="Item photo">
+                    <div class="gallery-thumbs" id="gallery-thumbs"></div>
+                </div>
+
+                <!-- Editable Fields -->
+                <div class="detail-form">
+                    <div class="field-group">
+                        <label for="edit-title">Title</label>
+                        <input type="text" id="edit-title" maxlength="120" placeholder="Listing title...">
+                        <span class="char-count" id="title-char-count">0/120</span>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="edit-description">Description</label>
+                        <textarea id="edit-description" rows="4" placeholder="Item description..."></textarea>
+                    </div>
+
+                    <div class="pricing-section">
+                        <div class="pricing-main">
+                            <div class="field-group">
+                                <label for="edit-price">Price (€)</label>
+                                <input type="number" id="edit-price" min="0" step="1">
+                            </div>
+                            <div class="confidence-badge" id="price-confidence-badge">
+                                <span class="badge-dot"></span>
+                                <span class="badge-text"></span>
+                            </div>
+                        </div>
+                        <div class="pricing-info" id="pricing-info"></div>
+                        <div class="field-group">
+                            <label for="edit-strategy">Price Strategy</label>
+                            <select id="edit-strategy">
+                                <option value="fast_sale">Fast Sale (↓20%)</option>
+                                <option value="competitive" selected>Competitive (↓10%)</option>
+                                <option value="fair">Fair Market (median)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="fields-row">
+                        <div class="field-group">
+                            <label for="edit-condition">Condition</label>
+                            <select id="edit-condition">
+                                <option value="new">Neu</option>
+                                <option value="like_new">Wie Neu</option>
+                                <option value="good">Gut</option>
+                                <option value="fair">Akzeptabel</option>
+                                <option value="poor">Stark gebraucht</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="edit-zip">ZIP Code</label>
+                            <input type="text" id="edit-zip" maxlength="5" placeholder="10115">
+                        </div>
+                    </div>
+
+                    <!-- Comparables -->
+                    <div class="comparables-section" id="comparables-section">
+                        <h3>Comparable Listings</h3>
+                        <div id="comparables-list"></div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="detail-actions">
+                    <button class="btn btn-success" id="btn-approve" title="Approve (A)">✅ Approve</button>
+                    <button class="btn btn-secondary" id="btn-skip" title="Skip (S)">⏭️ Skip</button>
+                    <button class="btn btn-danger" id="btn-reject" title="Reject (R)">🗑️ Reject</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

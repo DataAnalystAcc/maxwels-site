@@ -1,0 +1,163 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ka-bot-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-kleinanzeigen_bot}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - ka-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ka-bot-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ka-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: ka-bot-n8n
+    restart: unless-stopped
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5679/}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Europe/Berlin}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB:-kleinanzeigen_bot}
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_USER=${POSTGRES_USER:-postgres}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+    ports:
+      - "5679:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - ka-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  core-api:
+    build:
+      context: ./services/core-api
+      dockerfile: Dockerfile
+    container_name: ka-bot-api
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-kleinanzeigen_bot}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemma-4-27b-it:free}
+      - OPENROUTER_FALLBACK_MODEL=${OPENROUTER_FALLBACK_MODEL:-google/gemini-2.0-flash}
+      - DEFAULT_ZIP=${DEFAULT_ZIP:-10115}
+      - DEFAULT_PRICE_STRATEGY=${DEFAULT_PRICE_STRATEGY:-competitive}
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./services/core-api:/app
+      - ./data:/data
+    networks:
+      - ka-network
+      - n8n-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ka-review.entrypoints=websecure"
+      - "traefik.http.routers.ka-review.rule=Host(`listing.blank-agent.de`)"
+      - "traefik.http.routers.ka-review.tls=true"
+      - "traefik.http.routers.ka-review.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.ka-review.loadbalancer.server.port=8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  telegram-bot:
+    build:
+      context: ./services/telegram-bot
+      dockerfile: Dockerfile
+    container_name: ka-bot-telegram
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ALLOWED_TELEGRAM_CHAT_ID=${ALLOWED_TELEGRAM_CHAT_ID}
+      - REVIEW_BASE_URL=${REVIEW_BASE_URL}
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-kleinanzeigen_bot}
+      - N8N_WEBHOOK_ITEM_INTAKE=${N8N_WEBHOOK_ITEM_INTAKE:-http://n8n:5678/webhook/item-intake}
+    volumes:
+      - ./services/telegram-bot:/app
+      - ./data:/data
+    networks:
+      - ka-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  posting-worker:
+    build:
+      context: ./services/posting-worker
+      dockerfile: Dockerfile
+    container_name: ka-bot-poster
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-kleinanzeigen_bot}
+      - API_BASE_URL=http://core-api:8000
+      - DRY_RUN=${DRY_RUN:-true}
+      - POSTING_DELAY_MIN_SEC=${POSTING_DELAY_MIN_SEC:-30}
+      - POSTING_DELAY_MAX_SEC=${POSTING_DELAY_MAX_SEC:-60}
+      - POSTING_MAX_PER_SESSION=${POSTING_MAX_PER_SESSION:-10}
+    volumes:
+      - ./services/posting-worker:/app
+      - ./data:/data
+    networks:
+      - ka-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
+
+networks:
+  ka-network:
+    driver: bridge
+  n8n-network:
+    external: true
+    name: n8n-compose_default
