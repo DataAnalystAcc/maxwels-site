@@ -45,6 +45,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not _is_authorized(chat_id):
         logger.warning(f"Unauthorized message from chat {chat_id}")
+        await message.reply_text("⛔ This bot is private. Your chat ID is not authorized.")
         return
 
     try:
@@ -222,9 +223,19 @@ async def _process_item(
     logger.info(f"Processing item: listing_id={listing_id}, photos={len(messages)}, "
                 f"note={'yes' if user_note else 'no'}")
 
+    bot = context.bot
+
+    # Acknowledge receipt immediately so the user knows the bot is working
+    try:
+        await bot.send_message(
+            chat_id=chat_id,
+            text=f"📷 Got it! {len(messages)} photo(s) received. Identifying item...",
+        )
+    except Exception as e:
+        logger.error(f"Failed to send ack to chat {chat_id}: {e}")
+
     # Download all photos and generate thumbnails
     image_records = []
-    bot = context.bot
     for i, msg in enumerate(messages):
         try:
             from telegram import PhotoSize as PS
@@ -331,12 +342,12 @@ async def _process_item(
     except Exception:
         item_count = "?"
 
-    # Reply to user
-    note_hint = "" if user_note else "\n💡 Send a text note within 5s to add details."
+    # Saved — tell the user their item is queued for draft generation
+    note_hint = "" if user_note else "\n💡 Reply with a text note within 5s to add details."
     try:
         await bot.send_message(
             chat_id=chat_id,
-            text=f"📦 Item #{item_count} received ({len(image_records)} photos). Processing...{note_hint}",
+            text=f"✅ Item #{item_count} saved ({len(image_records)} photos). Generating draft listing...{note_hint}",
         )
     except Exception as e:
         logger.error(f"Failed to send confirmation to chat {chat_id}: {e}")

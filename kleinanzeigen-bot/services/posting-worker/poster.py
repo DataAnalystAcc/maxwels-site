@@ -24,7 +24,9 @@ async def post_listing(page: Page, listing_data: dict) -> dict:
     Returns:
         Dict with status, url, screenshot_path
     """
-    listing_id = listing_data["listing_id"]
+    listing_id = listing_data.get("listing_id")
+    if not listing_id:
+        raise ValueError(f"Missing 'listing_id' in listing payload: {list(listing_data.keys())}")
     screenshots_dir = Path(config.SCREENSHOTS_DIR) / listing_id
     screenshots_dir.mkdir(parents=True, exist_ok=True)
 

@@ -24,7 +24,7 @@ async def report_result(listing_id: str, result: dict, attempt: int):
     """Report posting result back to the Core API."""
     async with httpx.AsyncClient(timeout=10.0) as client:
         await client.patch(
-            f"{config.API_BASE_URL}/api/listings/{listing_id}/posting-result",
+            f"{config.API_BASE_URL}/api/posting/{listing_id}/posting-result",
             json={
                 "status": result["status"],
                 "url": result.get("url"),

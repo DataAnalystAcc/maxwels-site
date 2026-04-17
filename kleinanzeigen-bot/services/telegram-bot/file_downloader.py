@@ -1,6 +1,7 @@
 """Download Telegram files and generate thumbnails."""
 
 import logging
+import shutil
 import traceback
 from pathlib import Path
 from io import BytesIO
@@ -57,7 +58,6 @@ async def download_photo(bot: Bot, photo: PhotoSize, listing_id: str, index: int
     except Exception as e:
         logger.warning(f"Thumbnail generation failed for photo {index}: {e}")
         # Fall back to using original as thumb
-        import shutil
         shutil.copy2(original_path, thumb_path)
         thumb_width, thumb_height = photo.width, photo.height
 

@@ -37,7 +37,7 @@ async def generate_draft(listing_id: UUID, db: AsyncSession) -> dict:
 
     # Update status
     listing.status = "draft_generating"
-    await db.flush()
+    await db.commit()
 
     # ── Load images ──────────────────────────────────────
     img_result = await db.execute(
@@ -82,7 +82,7 @@ async def generate_draft(listing_id: UUID, db: AsyncSession) -> dict:
         listing.llm_raw_response = raw_response
 
         listing.status = "pricing_pending"
-        await db.flush()
+        await db.commit()
 
         logger.info(f"Listing {listing_id}: identified as '{identification.item_name}' "
                      f"(confidence: {identification.identification_confidence})")
@@ -97,7 +97,7 @@ async def generate_draft(listing_id: UUID, db: AsyncSession) -> dict:
             new_value="llm_identification_failed",
             details={"error": str(e)},
         ))
-        await db.flush()
+        await db.commit()
         return {"success": False, "listing_id": listing_id, "error": str(e),
                 "status": "draft_failed"}
 
@@ -175,7 +175,7 @@ async def generate_draft(listing_id: UUID, db: AsyncSession) -> dict:
 
     # ── Final status ─────────────────────────────────────
     listing.status = "draft_ready"
-    await db.flush()
+    await db.commit()
 
     db.add(AuditLog(
         listing_id=listing.id,

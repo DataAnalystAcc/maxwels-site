@@ -82,6 +82,8 @@ services:
       - OPENROUTER_FALLBACK_MODEL=${OPENROUTER_FALLBACK_MODEL:-google/gemini-2.0-flash}
       - DEFAULT_ZIP=${DEFAULT_ZIP:-10115}
       - DEFAULT_PRICE_STRATEGY=${DEFAULT_PRICE_STRATEGY:-competitive}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - REVIEW_BASE_URL=${REVIEW_BASE_URL:-http://localhost:8001}
     ports:
       - "8001:8000"
     volumes:
@@ -89,7 +91,6 @@ services:
       - ./data:/data
     networks:
       - ka-network
-      - n8n-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ka-review.entrypoints=websecure"
@@ -158,6 +159,3 @@ volumes:
 networks:
   ka-network:
     driver: bridge
-  n8n-network:
-    external: true
-    name: n8n-compose_default

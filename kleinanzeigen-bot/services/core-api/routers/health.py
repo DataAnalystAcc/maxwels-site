@@ -25,13 +25,14 @@ async def health_check(db: AsyncSession = Depends(get_db)):
         checks["status"] = "degraded"
 
     # Redis check
+    r = aioredis.from_url(settings.redis_url)
     try:
-        r = aioredis.from_url(settings.redis_url)
         await r.ping()
-        await r.close()
         checks["redis"] = "connected"
     except Exception as e:
         checks["redis"] = f"error: {str(e)}"
         checks["status"] = "degraded"
+    finally:
+        await r.close()
 
     return checks

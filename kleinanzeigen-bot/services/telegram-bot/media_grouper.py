@@ -85,4 +85,7 @@ class MediaGrouper:
 
         logger.info(f"Media group {group_id} complete: {len(messages)} photos")
 
-        await self.on_group_ready(group_id, messages)
+        try:
+            await self.on_group_ready(group_id, messages)
+        except Exception as e:
+            logger.error(f"on_group_ready callback failed for group {group_id}: {e}", exc_info=True)

@@ -172,7 +172,7 @@ async def update_listing(
             new_value=body.status,
         ))
 
-    await db.flush()
+    await db.commit()
 
     return {"id": listing.id, "status": listing.status, "updated_at": listing.updated_at}
 
@@ -211,6 +211,6 @@ async def bulk_approve(body: BulkApproveIn, db: AsyncSession = Depends(get_db)):
             details={"source": "bulk_approve"},
         ))
 
-    await db.flush()
+    await db.commit()
 
     return BulkApproveOut(approved_count=len(approved_ids), listing_ids=approved_ids)

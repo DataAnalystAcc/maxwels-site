@@ -70,7 +70,7 @@ async def start_posting(body: PostingStartIn, db: AsyncSession = Depends(get_db)
         queued_ids.append(listing.id)
 
     await r.close()
-    await db.flush()
+    await db.commit()
 
     return PostingStartOut(queued_count=len(queued_ids), listing_ids=queued_ids)
 
@@ -168,6 +168,6 @@ async def update_posting_result(
         },
     ))
 
-    await db.flush()
+    await db.commit()
 
     return {"listing_id": str(listing.id), "status": listing.status}
